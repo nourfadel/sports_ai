@@ -2,9 +2,14 @@ package sports_ai_system.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import sports_ai_system.enums.Role;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import sports_ai_system.entity.enums.Role;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")

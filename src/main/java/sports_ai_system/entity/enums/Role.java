@@ -1,4 +1,4 @@
-package sports_ai_system.enums;
+package sports_ai_system.entity.enums;
 
 public enum Role {
     ADMIN,

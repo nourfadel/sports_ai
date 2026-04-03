@@ -2,21 +2,22 @@ package sports_ai_system.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import sports_ai_system.enums.Role;
+import sports_ai_system.entity.enums.Role;
 
 @Data
 public class RegisterRequest {
 
-    @Email
-    @NotBlank
+    @Email(message = "Invalid email Format")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @Size(min =8 , max = 12)
-    @NotBlank
+    @NotBlank(message = "Password is required")
+    @Size(min =8 , max = 12,message = "Password must be at least 8 chars and at most 12 chars")
     private String password;
 
-    @NotBlank
+    @NotNull
     private Role role;
 }
