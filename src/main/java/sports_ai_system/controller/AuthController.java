@@ -7,11 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sports_ai_system.dto.AuthResponse;
-import sports_ai_system.dto.LoginRequest;
-import sports_ai_system.dto.RegisterRequest;
+import sports_ai_system.dto.*;
 import sports_ai_system.service.AuthService;
-import sports_ai_system.service.OtpService;
+import sports_ai_system.service.PasswordResetService;
 
 import java.util.Map;
 
@@ -21,38 +19,78 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final OtpService otpService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request){
-        AuthResponse response = authService.register(request);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request){
-        return ResponseEntity.ok(authService.login(request));
-
-    }
-
-    @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
-
-        String email = request.get("email");
+    public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody RegisterRequest request) {
+        authService.register(request);
 
         return ResponseEntity.ok(
-                otpService.forgotPassword(email)
+                ApiResponse.<Void>builder()
+                        .status("SUCCESS")
+                        .message("User registered successfully")
+                        .data(null)
+                        .build()
         );
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String,String> request){
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+
         return ResponseEntity.ok(
-                otpService.resetPassword(
-                        request.get("email"),
-                        request.get("otp"),
-                        request.get("newPassword")
-                )
+                ApiResponse.<AuthResponse>builder()
+                        .status("SUCCESS")
+                        .message("Login successful")
+                        .data(response)
+                        .build()
+        );
+    }
+
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.forgotPassword(request.getEmail());
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .status("SUCCESS")
+                        .message("OTP sent successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(
+                request.getEmail(),
+                request.getOtp(),
+                request.getNewPassword()
+        );
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .status("SUCCESS")
+                        .message("Password reset successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+
+
+    @PostMapping("/resend-otp")
+    public ResponseEntity<ApiResponse<Void>> resendOtp(@Valid @RequestBody ResendOtpRequest request) {
+        passwordResetService.resendOtp(request.getEmail());
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .status("SUCCESS")
+                        .message("OTP resent successfully")
+                        .data(null)
+                        .build()
         );
     }
 }

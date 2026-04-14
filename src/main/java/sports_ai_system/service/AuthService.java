@@ -10,6 +10,7 @@ import sports_ai_system.dto.AuthResponse;
 import sports_ai_system.dto.LoginRequest;
 import sports_ai_system.dto.RegisterRequest;
 import sports_ai_system.entity.User;
+import sports_ai_system.exception.EmailAlreadyExistException;
 import sports_ai_system.exception.UserAlreadyExistsException;
 import sports_ai_system.repository.UserRepository;
 
@@ -27,7 +28,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request){
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("Email already exists");
+            throw new EmailAlreadyExistException("Email already exists");
         }
 
         User user = User.builder()

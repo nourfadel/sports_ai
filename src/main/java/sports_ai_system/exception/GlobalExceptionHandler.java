@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import sports_ai_system.dto.ApiResponse;
 import sports_ai_system.dto.ErrorResponse;
 
 import java.util.HashMap;
@@ -36,6 +37,34 @@ public class GlobalExceptionHandler  {
 
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException userNotFoundException){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.<Void>builder()
+                        .status("ERROR")
+                        .message(userNotFoundException.getMessage())
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @ExceptionHandler({
+            InvalidOtpException.class,
+            OtpExpiredException.class,
+            OtpAlreadyUsedException.class,
+            OtpResendTooSoonException.class
+    })
+    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(RuntimeException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.<Void>builder()
+                        .status("ERROR")
+                        .message(ex.getMessage())
+                        .data(null)
+                        .build()
+        );
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
