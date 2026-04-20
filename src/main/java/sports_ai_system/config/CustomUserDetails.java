@@ -44,4 +44,8 @@ public record CustomUserDetails(User user) implements UserDetails {
     public boolean isEnabled() {
         return user.getIsActive();
     }
+
+    public Long getUserId(){
+        return user.getId();
+    }
 }

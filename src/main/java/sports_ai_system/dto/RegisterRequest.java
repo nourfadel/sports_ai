@@ -10,6 +10,13 @@ import sports_ai_system.entity.enums.Role;
 @Data
 public class RegisterRequest {
 
+    @NotBlank
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
+
+
     @Email(message = "Invalid email Format")
     @NotBlank(message = "Email is required")
     private String email;

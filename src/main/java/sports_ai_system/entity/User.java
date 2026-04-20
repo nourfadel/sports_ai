@@ -28,6 +28,12 @@ public class User {
     private String email;
 
     @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -36,10 +42,15 @@ public class User {
     private Boolean isActive;
     private LocalDateTime createdAt;
 
+    private Boolean profileCompleted;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.isActive = true;
     }
 
+    public void markProfileCompleted() {
+        this.profileCompleted = true;
+    }
 }
