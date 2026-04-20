@@ -55,7 +55,41 @@ public class GlobalExceptionHandler  {
             OtpAlreadyUsedException.class,
             OtpResendTooSoonException.class
     })
-    public ResponseEntity<ApiResponse<Void>> handleUserNotFound(RuntimeException ex){
+    public ResponseEntity<ApiResponse<Void>> handleOtpExceptions(RuntimeException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.<Void>builder()
+                        .status("ERROR")
+                        .message(ex.getMessage())
+                        .data(null)
+                        .build()
+        );
+    }
+
+    // handling exception for session
+    @ExceptionHandler(SessionNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleSessionNotFound(SessionNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.<Void>builder()
+                        .status("ERROR")
+                        .message(ex.getMessage())
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(InvalidSessionStateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidSessionState(InvalidSessionStateException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.<Void>builder()
+                        .status("ERROR")
+                        .message(ex.getMessage())
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(UnauthorizedSessionAccessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorizedSessionAccess(UnauthorizedSessionAccessException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ApiResponse.<Void>builder()
                         .status("ERROR")

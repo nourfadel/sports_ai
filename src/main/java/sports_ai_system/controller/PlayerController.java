@@ -19,7 +19,7 @@ public class PlayerController {
 
     private final PlayerProfileService playerService;
 
-    @PostMapping("/profile")
+    @PostMapping("/create-profile")
     public ResponseEntity<ApiResponse<Void>> createProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PlayerProfileRequest request
