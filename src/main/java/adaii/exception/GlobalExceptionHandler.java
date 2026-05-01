@@ -110,6 +110,18 @@ public class GlobalExceptionHandler  {
         );
     }
 
+
+    @ExceptionHandler(SensorDataNotFound.class)
+    public ResponseEntity<ApiResponse<Void>> handleSensorDataNotFound(SensorDataNotFound sensorDataNotFound){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ApiResponse.<Void>builder()
+                        .status("ERROR")
+                        .message(sensorDataNotFound.getMessage())
+                        .data(null)
+                        .build()
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
         ex.printStackTrace();
