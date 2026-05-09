@@ -12,4 +12,8 @@ public interface AlertNotificationRepository extends JpaRepository<AlertNotifica
     List<AlertNotification> findBySessionIdOrderByCreatedAtDesc(Long sessionId);
 
     List<AlertNotification> findByPlayerProfileIdAndIsReadFalseOrderByCreatedAtDesc(Long playerProfileId);
+
+    List<AlertNotification> findTop5BySessionTeamIdOrderByCreatedAtDesc(Long teamId);
+
+    int countBySessionTeamIdAndIsReadFalse(Long teamId);
 }

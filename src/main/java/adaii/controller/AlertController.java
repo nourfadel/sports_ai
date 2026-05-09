@@ -4,6 +4,7 @@ import adaii.dto.AlertResponse;
 import adaii.dto.ApiResponse;
 import adaii.entity.AlertNotification;
 import adaii.repository.AlertNotificationRepository;
+import adaii.service.AlertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AlertController {
 
-    private final AlertNotificationRepository alertRepository;
+    private final AlertService alertService;
 
     @GetMapping("/session/{sessionId}")
     public ResponseEntity<ApiResponse<List<AlertResponse>>> getSessionAlerts(
             @PathVariable Long sessionId
     ) {
-        List<AlertResponse> response = alertRepository.findBySessionIdOrderByCreatedAtDesc(sessionId)
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+        List<AlertResponse> response = alertService.getSessionAlerts(sessionId);
 
         return ResponseEntity.ok(
                 ApiResponse.<List<AlertResponse>>builder()
@@ -35,16 +33,18 @@ public class AlertController {
         );
     }
 
-    private AlertResponse mapToResponse(AlertNotification alert) {
-        return AlertResponse.builder()
-                .id(alert.getId())
-                .sessionId(alert.getSession().getId())
-                .playerProfileId(alert.getPlayerProfile().getId())
-                .type(alert.getType())
-                .severity(alert.getSeverity())
-                .message(alert.getMessage())
-                .isRead(alert.getIsRead())
-                .createdAt(alert.getCreatedAt())
-                .build();
+    @PutMapping("/{alertId}/read")
+    public ResponseEntity<ApiResponse<AlertResponse>> markAlertAsRead(
+            @PathVariable Long alertId
+    ) {
+        AlertResponse response = alertService.markAlertAsRead(alertId);
+
+        return ResponseEntity.ok(
+                ApiResponse.<AlertResponse>builder()
+                        .status("SUCCESS")
+                        .message("Alert marked as read successfully")
+                        .data(response)
+                        .build()
+        );
     }
 }

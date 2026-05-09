@@ -1,10 +1,7 @@
 package adaii.controller;
 
 import adaii.config.CustomUserDetails;
-import adaii.dto.ApiResponse;
-import adaii.dto.CoachPlayerResponse;
-import adaii.dto.CoachProfileRequest;
-import adaii.dto.CoachProfileResponse;
+import adaii.dto.*;
 import adaii.service.CoachProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -69,4 +66,128 @@ public class CoachProfileController {
                         .build()
         );
     }
+
+    @GetMapping("/players/{playerProfileId}/sessions")
+    public ResponseEntity<ApiResponse<List<TrainingSessionResponse>>> getPlayerSessions(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long playerProfileId
+    ) {
+        List<TrainingSessionResponse> response =
+                coachProfileService.getPlayerSessions(userDetails.getUserId(), playerProfileId);
+
+        return ResponseEntity.ok(
+                ApiResponse.<List<TrainingSessionResponse>>builder()
+                        .status("SUCCESS")
+                        .message("Player sessions fetched successfully")
+                        .data(response)
+                        .build()
+        );
+    }
+
+
+    @GetMapping("/sessions/{sessionId}/live")
+    public ResponseEntity<ApiResponse<LiveSensorDataResponse>> getLiveData(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long sessionId
+    ){
+
+        LiveSensorDataResponse dataResponse = coachProfileService.getSessionLiveData(userDetails.getUserId(), sessionId);
+
+        return ResponseEntity.ok(
+                ApiResponse.<LiveSensorDataResponse>builder()
+                        .status("SUCCESS")
+                        .message("Session live data fetched successfully")
+                        .data(dataResponse)
+                        .build()
+        );
+
+    }
+
+
+    @GetMapping("/sessions/{sessionId}/sensor-data")
+    public ResponseEntity<ApiResponse<List<SensorDataResponse>>> getSessionHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long sessionId){
+
+        List<SensorDataResponse> responses = coachProfileService.getSessionSensorData(userDetails.getUserId(), sessionId);
+
+        return ResponseEntity.ok(
+                ApiResponse.<List<SensorDataResponse>>builder()
+                        .status("SUCCESS")
+                        .message("Session live data fetched successfully")
+                        .data(responses)
+                        .build());
+    }
+
+    @GetMapping("/sessions/{sessionId}/alerts")
+    public ResponseEntity<ApiResponse<List<AlertResponse>>> getSessionAlerts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long sessionId
+    ) {
+        List<AlertResponse> response =
+                coachProfileService.getSessionsAlerts(userDetails.getUserId(), sessionId);
+
+        return ResponseEntity.ok(
+                ApiResponse.<List<AlertResponse>>builder()
+                        .status("SUCCESS")
+                        .message("Session alerts fetched successfully")
+                        .data(response)
+                        .build()
+        );
+    }
+
+    @GetMapping("/sessions/{sessionId}/analysis")
+    public ResponseEntity<ApiResponse<SessionAnalysisResponse>> getSessionAnalysis(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long sessionId
+    ) {
+        SessionAnalysisResponse response =
+                coachProfileService.getSessionAnalysis(userDetails.getUserId(), sessionId);
+
+        return ResponseEntity.ok(
+                ApiResponse.<SessionAnalysisResponse>builder()
+                        .status("SUCCESS")
+                        .message("Session analysis fetched successfully")
+                        .data(response)
+                        .build()
+        );
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<ApiResponse<CoachDashboardResponse>> getDashboard(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        CoachDashboardResponse response =
+                coachProfileService.getDashboard(userDetails.getUserId());
+
+        return ResponseEntity.ok(
+                ApiResponse.<CoachDashboardResponse>builder()
+                        .status("SUCCESS")
+                        .message("Coach dashboard fetched successfully")
+                        .data(response)
+                        .build()
+        );
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

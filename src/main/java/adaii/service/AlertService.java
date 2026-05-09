@@ -1,5 +1,6 @@
 package adaii.service;
 
+import adaii.dto.AlertResponse;
 import adaii.entity.AlertNotification;
 import adaii.entity.PlayerProfile;
 import adaii.entity.SensorData;
@@ -7,6 +8,8 @@ import adaii.entity.TrainingSession;
 import adaii.repository.AlertNotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,4 +68,39 @@ public class AlertService {
 
         alertRepository.save(alert);
     }
+
+
+
+    public AlertResponse markAlertAsRead(Long alertId) {
+        AlertNotification alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new RuntimeException("Alert not found"));
+
+        alert.setIsRead(true);
+
+        AlertNotification saved = alertRepository.save(alert);
+
+        return mapToResponse(saved);
+    }
+
+    private AlertResponse mapToResponse(AlertNotification alert) {
+        return AlertResponse.builder()
+                .id(alert.getId())
+                .sessionId(alert.getSession().getId())
+                .playerProfileId(alert.getPlayerProfile().getId())
+                .type(alert.getType())
+                .severity(alert.getSeverity())
+                .message(alert.getMessage())
+                .isRead(alert.getIsRead())
+                .createdAt(alert.getCreatedAt())
+                .build();
+    }
+
+    public List<AlertResponse> getSessionAlerts(Long sessionId) {
+        return alertRepository.findBySessionIdOrderByCreatedAtDesc(sessionId)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    
 }
