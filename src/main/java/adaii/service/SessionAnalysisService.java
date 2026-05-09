@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -156,5 +157,10 @@ public class SessionAnalysisService {
                 .components(fromJson(analysis.getComponentsJson()))
                 .analyzedAt(analysis.getAnalyzedAt())
                 .build();
+    }
+
+    public Optional<SessionAnalysisResponse> getSessionAnalysisIfExists(Long sessionId) {
+        return sessionAnalysisRepository.findBySessionId(sessionId)
+                .map(this::mapToResponse);
     }
 }

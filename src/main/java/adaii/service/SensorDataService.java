@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,24 +76,7 @@ public class SensorDataService {
         SensorData sensorData = sensorDataRepository.findTopBySessionIdOrderByTimestampDesc(sessionId)
                 .orElseThrow(() -> new RuntimeException("No live data found for this session"));
 
-        return LiveSensorDataResponse.builder()
-                .sessionId(sensorData.getSession().getId())
-                .deviceUuid(sensorData.getDeviceUuid())
-                .timestamp(sensorData.getTimestamp())
-                .heartRate(sensorData.getHeartRate())
-                .hrv(sensorData.getHrv())
-                .respiratoryRate(sensorData.getRespiratoryRate())
-                .speed(sensorData.getSpeed())
-                .distance(sensorData.getDistance())
-                .accelerationX(sensorData.getAccelerationX())
-                .accelerationY(sensorData.getAccelerationY())
-                .accelerationZ(sensorData.getAccelerationZ())
-                .playerLoad(sensorData.getPlayerLoad())
-                .sprintCount(sensorData.getSprintCount())
-                .impactForce(sensorData.getImpactForce())
-                .bodyTemperature(sensorData.getBodyTemperature())
-                .muscleFatigueIndex(sensorData.getMuscleFatigueIndex())
-                .build();
+        return mapToLiveResponse(sensorData);
     }
 
     public List<SensorDataResponse> getSessionData(Long sessionId){
@@ -190,6 +174,31 @@ public class SensorDataService {
                 .build();
     }
 
+    public Optional<LiveSensorDataResponse> getLatestLiveDataIfExists(Long sessionId) {
+        return sensorDataRepository.findTopBySessionIdOrderByTimestampDesc(sessionId)
+                .map(this::mapToLiveResponse);
+    }
+
+    private LiveSensorDataResponse mapToLiveResponse(SensorData sensorData) {
+        return LiveSensorDataResponse.builder()
+                .sessionId(sensorData.getSession().getId())
+                .deviceUuid(sensorData.getDeviceUuid())
+                .timestamp(sensorData.getTimestamp())
+                .heartRate(sensorData.getHeartRate())
+                .hrv(sensorData.getHrv())
+                .respiratoryRate(sensorData.getRespiratoryRate())
+                .speed(sensorData.getSpeed())
+                .distance(sensorData.getDistance())
+                .accelerationX(sensorData.getAccelerationX())
+                .accelerationY(sensorData.getAccelerationY())
+                .accelerationZ(sensorData.getAccelerationZ())
+                .playerLoad(sensorData.getPlayerLoad())
+                .sprintCount(sensorData.getSprintCount())
+                .impactForce(sensorData.getImpactForce())
+                .bodyTemperature(sensorData.getBodyTemperature())
+                .muscleFatigueIndex(sensorData.getMuscleFatigueIndex())
+                .build();
+    }
 }
 
 
