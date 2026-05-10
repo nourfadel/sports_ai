@@ -1,18 +1,14 @@
 package adaii.service;
 
 import adaii.dto.*;
+import adaii.dto.response.ScoutDashboardResponse;
+import adaii.dto.response.ScoutPlayerComparisonResponse;
 import adaii.dto.response.ScoutPlayerDetailsResponse;
 import adaii.dto.response.ScoutPlayerResponse;
-import adaii.entity.PlayerProfile;
-import adaii.entity.ScoutProfile;
-import adaii.entity.TrainingSession;
-import adaii.entity.User;
+import adaii.entity.*;
 import adaii.exception.UserAlreadyExistsException;
 import adaii.exception.UserNotFoundException;
-import adaii.repository.PlayerProfileRepository;
-import adaii.repository.ScoutProfileRepository;
-import adaii.repository.TrainingSessionRepository;
-import adaii.repository.UserRepository;
+import adaii.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +25,7 @@ public class ScoutProfileService {
     private final TrainingSessionRepository trainingSessionRepository;
     private final SensorDataService sensorDataService;
     private final SessionAnalysisService sessionAnalysisService;
-//    private final ScoutWatchlistRepository scoutWatchlistRepository; // هنسيبها بعدين لو لسه معملناهاش
+    private final ScoutWatchlistRepository scoutWatchlistRepository;
 
     public ScoutProfileResponse createScoutProfile(Long userId, ScoutProfileRequest request) {
 
@@ -107,12 +103,20 @@ public class ScoutProfileService {
             String sortBy,
             String direction
     ) {
-        scoutProfileRepository.findByUserId(scoutUserId)
+        ScoutProfile scoutProfile = scoutProfileRepository.findByUserId(scoutUserId)
                 .orElseThrow(() -> new UserNotFoundException("Scout profile not found"));
 
         List<ScoutPlayerResponse> players = playerProfileRepository.findAll()
                 .stream()
-                .map(this::mapPlayerToScoutResponse)
+                .map(player -> {
+                    boolean watchlisted =
+                            scoutWatchlistRepository.existsByScoutProfileIdAndPlayerProfileId(
+                                    scoutProfile.getId(),
+                                    player.getId()
+                            );
+
+                    return mapPlayerToScoutResponse(player, watchlisted);
+                })
                 .filter(player -> matchesSearch(player, search))
                 .filter(player -> matchesPosition(player, position))
                 .filter(player -> matchesTeam(player, teamName))
@@ -198,7 +202,7 @@ public class ScoutProfileService {
         return comparator;
     }
 
-    private ScoutPlayerResponse mapPlayerToScoutResponse(PlayerProfile playerProfile) {
+    private ScoutPlayerResponse mapPlayerToScoutResponse(PlayerProfile playerProfile,Boolean watchList) {
 
         User user = playerProfile.getUser();
 
@@ -219,7 +223,7 @@ public class ScoutProfileService {
                 .potentialScore(0.0)
 
                 // temp watch list
-                .watchlisted(false)
+                .watchlisted(watchList)
                 .build();
     }
 
@@ -284,4 +288,104 @@ public class ScoutProfileService {
                 .teamName(session.getTeam() != null ? session.getTeam().getName() : null)
                 .build();
     }
+
+    public ScoutPlayerResponse addPlayerToWatchlist(Long scoutUserId, Long playerProfileId) {
+
+        ScoutProfile scoutProfile = scoutProfileRepository.findByUserId(scoutUserId)
+                .orElseThrow(() -> new UserNotFoundException("Scout profile not found"));
+
+        PlayerProfile playerProfile = playerProfileRepository.findById(playerProfileId)
+                .orElseThrow(() -> new UserNotFoundException("Player profile not found"));
+
+        if (scoutWatchlistRepository.existsByScoutProfileIdAndPlayerProfileId(
+                scoutProfile.getId(),
+                playerProfile.getId()
+        )) {
+            throw new UserAlreadyExistsException("Player already exists in your watchlist");
+        }
+
+        ScoutWatchlist watchlist = ScoutWatchlist.builder()
+                .scoutProfile(scoutProfile)
+                .playerProfile(playerProfile)
+                .build();
+
+        scoutWatchlistRepository.save(watchlist);
+
+        return mapPlayerToScoutResponse(playerProfile, true);
+    }
+
+    public List<ScoutPlayerResponse> getMyWatchlist(Long scoutUserId) {
+
+        ScoutProfile scoutProfile = scoutProfileRepository.findByUserId(scoutUserId)
+                .orElseThrow(() -> new UserNotFoundException("Scout profile not found"));
+
+        return scoutWatchlistRepository.findByScoutProfileIdOrderByCreatedAtDesc(scoutProfile.getId())
+                .stream()
+                .map(item -> mapPlayerToScoutResponse(item.getPlayerProfile(), true))
+                .toList();
+    }
+
+    public void removePlayerFromWatchlist(Long scoutUserId, Long playerProfileId) {
+
+        ScoutProfile scoutProfile = scoutProfileRepository.findByUserId(scoutUserId)
+                .orElseThrow(() -> new UserNotFoundException("Scout profile not found"));
+
+        ScoutWatchlist watchlist = scoutWatchlistRepository
+                .findByScoutProfileIdAndPlayerProfileId(scoutProfile.getId(), playerProfileId)
+                .orElseThrow(() -> new RuntimeException("Player is not in your watchlist"));
+
+        scoutWatchlistRepository.delete(watchlist);
+    }
+
+    public ScoutPlayerComparisonResponse comparePlayers(
+            Long scoutUserId,
+            Long player1Id,
+            Long player2Id
+    ) {
+        if (player1Id.equals(player2Id)) {
+            throw new IllegalArgumentException("You cannot compare the same player");
+        }
+
+        ScoutPlayerDetailsResponse player1 =
+                getPlayerDetails(scoutUserId, player1Id);
+
+        ScoutPlayerDetailsResponse player2 =
+                getPlayerDetails(scoutUserId, player2Id);
+
+        return ScoutPlayerComparisonResponse.builder()
+                .player1(player1)
+                .player2(player2)
+                .build();
+    }
+
+    public ScoutDashboardResponse getDashboard(Long scoutUserId) {
+
+        ScoutProfile scoutProfile = scoutProfileRepository.findByUserId(scoutUserId)
+                .orElseThrow(() -> new UserNotFoundException("Scout profile not found"));
+
+        List<PlayerProfile> allPlayers = playerProfileRepository.findAll();
+
+        List<ScoutWatchlist> watchlistItems =
+                scoutWatchlistRepository.findByScoutProfileIdOrderByCreatedAtDesc(scoutProfile.getId());
+
+        List<ScoutPlayerResponse> latestWatchlistPlayers = watchlistItems.stream()
+                .limit(5)
+                .map(item -> mapPlayerToScoutResponse(item.getPlayerProfile(), true))
+                .toList();
+
+        int highPotentialCount = allPlayers.stream()
+                .map(player -> mapPlayerToScoutResponse(player, false))
+                .filter(player -> player.getPotentialScore() != null && player.getPotentialScore() >= 80)
+                .toList()
+                .size();
+
+        return ScoutDashboardResponse.builder()
+                .playersCount(allPlayers.size())
+                .watchlistCount(watchlistItems.size())
+                .highPotentialCount(highPotentialCount)
+                .latestWatchlistPlayers(latestWatchlistPlayers)
+                .build();
+    }
+
+
 }
