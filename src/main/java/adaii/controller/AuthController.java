@@ -1,26 +1,49 @@
 package adaii.controller;
 
 import adaii.dto.*;
+import adaii.service.AuthService;
+import adaii.service.PasswordResetService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import adaii.service.AuthService;
-import adaii.service.PasswordResetService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/sports/auth")
 @RequiredArgsConstructor
+@Tag(
+        name = "Authentication APIs",
+        description = "APIs for user registration, login, OTP, and password reset."
+)
 public class AuthController {
 
     private final AuthService authService;
     private final PasswordResetService passwordResetService;
 
+    @Operation(
+            summary = "Register new user",
+            description = "Creates a new user account with role PLAYER, COACH, SCOUT, or ADMIN."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "User registered successfully"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Validation error"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "409",
+                    description = "User already exists"
+            )
+    })
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Void>> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<Void>> register(
+            @Valid @RequestBody RegisterRequest request
+    ) {
         authService.register(request);
 
         return ResponseEntity.ok(
@@ -32,9 +55,32 @@ public class AuthController {
         );
     }
 
-
+    @Operation(
+            summary = "Login user",
+            description = "Authenticates a user using email and password, then returns a JWT token."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Login successful"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Validation error"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Invalid email or password"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "403",
+                    description = "Account is not active or access is forbidden"
+            )
+    })
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
+            @Valid @RequestBody LoginRequest request
+    ) {
         AuthResponse response = authService.login(request);
 
         return ResponseEntity.ok(
@@ -46,9 +92,28 @@ public class AuthController {
         );
     }
 
-
+    @Operation(
+            summary = "Request password reset OTP",
+            description = "Sends a password reset OTP to the user's registered email address."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "OTP sent successfully"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Validation error"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "User not found"
+            )
+    })
     @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request
+    ) {
         passwordResetService.forgotPassword(request.getEmail());
 
         return ResponseEntity.ok(
@@ -60,9 +125,36 @@ public class AuthController {
         );
     }
 
-
+    @Operation(
+            summary = "Reset password",
+            description = "Resets the user's password after validating the OTP code."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Password reset successfully"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Validation error or invalid OTP"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "User not found"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "410",
+                    description = "OTP has expired"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "409",
+                    description = "OTP has already been used"
+            )
+    })
     @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<ApiResponse<Void>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request
+    ) {
         passwordResetService.resetPassword(
                 request.getEmail(),
                 request.getOtp(),
@@ -78,9 +170,28 @@ public class AuthController {
         );
     }
 
-
+    @Operation(
+            summary = "Resend OTP",
+            description = "Generates and sends a new OTP to the user's registered email address."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "OTP resent successfully"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Validation error"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "User not found"
+            )
+    })
     @PostMapping("/resend-otp")
-    public ResponseEntity<ApiResponse<Void>> resendOtp(@Valid @RequestBody ResendOtpRequest request) {
+    public ResponseEntity<ApiResponse<Void>> resendOtp(
+            @Valid @RequestBody ResendOtpRequest request
+    ) {
         passwordResetService.resendOtp(request.getEmail());
 
         return ResponseEntity.ok(

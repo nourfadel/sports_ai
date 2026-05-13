@@ -16,6 +16,7 @@ import adaii.repository.TrainingSessionRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -108,6 +109,12 @@ public class TrainingSessionService {
                 .notes(session.getNotes())
                 .teamName(session.getTeam() != null ? session.getTeam().getName() : null)
                 .build();
+    }
+
+    public Optional<Long> getLatestSessionIdForPlayer(Long playerProfileId) {
+        return trainingSessionRepository
+                .findTopByPlayerProfileIdOrderByCreatedAtDesc(playerProfileId)
+                .map(TrainingSession::getId);
     }
 }
 

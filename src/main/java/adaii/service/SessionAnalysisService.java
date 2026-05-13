@@ -1,7 +1,7 @@
 package adaii.service;
 
 import adaii.dto.AiAnalysisRequest;
-import adaii.dto.AiAnalysisResponse;
+import adaii.dto.response.AiAnalysisResponse;
 import adaii.dto.SessionAnalysisResponse;
 import adaii.entity.SensorData;
 import adaii.entity.SessionAnalysis;

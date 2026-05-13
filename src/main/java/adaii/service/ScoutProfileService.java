@@ -1,10 +1,7 @@
 package adaii.service;
 
 import adaii.dto.*;
-import adaii.dto.response.ScoutDashboardResponse;
-import adaii.dto.response.ScoutPlayerComparisonResponse;
-import adaii.dto.response.ScoutPlayerDetailsResponse;
-import adaii.dto.response.ScoutPlayerResponse;
+import adaii.dto.response.*;
 import adaii.entity.*;
 import adaii.exception.UserAlreadyExistsException;
 import adaii.exception.UserNotFoundException;
@@ -26,6 +23,7 @@ public class ScoutProfileService {
     private final SensorDataService sensorDataService;
     private final SessionAnalysisService sessionAnalysisService;
     private final ScoutWatchlistRepository scoutWatchlistRepository;
+    private final PlayerScoringService playerScoringService;
 
     public ScoutProfileResponse createScoutProfile(Long userId, ScoutProfileRequest request) {
 
@@ -206,6 +204,8 @@ public class ScoutProfileService {
 
         User user = playerProfile.getUser();
 
+        PlayerScoreResponse score = playerScoringService.calculateScores(playerProfile);
+
         return ScoutPlayerResponse.builder()
                 .playerProfileId(playerProfile.getId())
                 .userId(user.getId())
@@ -217,12 +217,8 @@ public class ScoutProfileService {
                 .playerImageUrl(playerProfile.getPlayerImageUrl())
                 .heightCm(playerProfile.getHeightCm())
                 .weightKg(playerProfile.getWeightKg())
-
-                // temp score
-                .overallScore(0.0)
-                .potentialScore(0.0)
-
-                // temp watch list
+                .overallScore(score.getOverallScore())
+                .potentialScore(score.getPotentialScore())
                 .watchlisted(watchList)
                 .build();
     }
