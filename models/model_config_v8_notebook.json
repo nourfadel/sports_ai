@@ -1,0 +1,50 @@
+{
+  "model_version": "v8_notebook",
+  "subjects": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "threshold": 0.6108040201005025,
+  "cv_threshold": 0.5666666666666669,
+  "normalization": "per_subject_zscore_clip3",
+  "window_len": 3840,
+  "window_step": 1920,
+  "fs": 64,
+  "fft_feat": 210,
+  "signals": [
+    "BVP",
+    "EDA",
+    "ACC_x",
+    "ACC_y",
+    "ACC_z",
+    "TEMP"
+  ],
+  "fft_method": "preserve_frequency_order",
+  "label_interp": "nearest_neighbor",
+  "architecture": "Conv2D_GRU_Dense",
+  "cv_results": {
+    "accuracy": 0.9067539456364894,
+    "f1": 0.8472290679304897,
+    "auc": 0.9589247696914525,
+    "recall": 0.873589303777983,
+    "precision": 0.8301587301587302
+  },
+  "final_val_results": {
+    "val_auc": 0.9919520020484924,
+    "val_accuracy": 0.9590908885002136,
+    "best_epoch": 49
+  }
+}
