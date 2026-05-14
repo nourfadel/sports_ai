@@ -1,5 +1,6 @@
 package adaii.service;
 
+import adaii.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import adaii.dto.CreateTrainingSessionRequest;
@@ -26,7 +27,7 @@ public class TrainingSessionService {
     private final TrainingSessionRepository trainingSessionRepository;
 
     // create session method
-    public void createSession(Long userId, CreateTrainingSessionRequest request){
+    public TrainingSessionResponse createSession(Long userId, CreateTrainingSessionRequest request){
         PlayerProfile playerProfile = playerProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException("Player profile not found"));
 
@@ -39,7 +40,7 @@ public class TrainingSessionService {
                 .notes(request.getNotes())
                 .build();
 
-        trainingSessionRepository.save(session);
+        return mapToResponse(trainingSessionRepository.save(session));
     }
 
     // start session method

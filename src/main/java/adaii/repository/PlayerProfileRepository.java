@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface PlayerProfileRepository extends JpaRepository<PlayerProfile,Long> {
     Optional<PlayerProfile> findByUserId(Long id);
     List<PlayerProfile> findByTeamId(Long teamId);
+    boolean existsByUserId(Long userId);
 }

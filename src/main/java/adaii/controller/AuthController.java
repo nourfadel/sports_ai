@@ -4,6 +4,7 @@ import adaii.dto.*;
 import adaii.service.AuthService;
 import adaii.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -198,6 +199,36 @@ public class AuthController {
                 ApiResponse.<Void>builder()
                         .status("SUCCESS")
                         .message("OTP resent successfully")
+                        .data(null)
+                        .build()
+        );
+    }
+
+    @Operation(
+            summary = "Logout user",
+            description = "Invalidates the current JWT token and logs the user out."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Log out successfully"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "Invalid token"
+            )
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader("Authorization") String authHeader
+    ) {
+
+        authService.logout(authHeader);
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .status("SUCCESS")
+                        .message("Logged out successfully")
                         .data(null)
                         .build()
         );

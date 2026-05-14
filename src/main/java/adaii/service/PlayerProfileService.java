@@ -1,6 +1,9 @@
 package adaii.service;
 
+import adaii.exception.PlayerProfileAlreadyExistException;
+import adaii.exception.PlayerProfileNotFoundException;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import adaii.dto.PlayerProfileRequest;
 import adaii.dto.PlayerProfileResponse;
@@ -34,6 +37,8 @@ public class PlayerProfileService {
                     return teamRepository.save(newTeam);
                 });
 
+
+
         PlayerProfile playerProfile = PlayerProfile.builder()
                 .user(user)
                 .age(request.getAge())
@@ -44,6 +49,11 @@ public class PlayerProfileService {
                 .team(team)
                 .build();
 
+        boolean exists = playerProfileRepository.existsByUserId(userId);
+
+        if (exists) {
+            throw new PlayerProfileAlreadyExistException("Player profile already exists");
+        }
         playerProfileRepository.save(playerProfile);
         user.markProfileCompleted();
         userRepository.save(user);

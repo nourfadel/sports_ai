@@ -1,5 +1,7 @@
 package adaii.service;
 
+import adaii.entity.BlacklistedToken;
+import adaii.repository.BlacklistedTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,15 +14,17 @@ import adaii.entity.User;
 import adaii.exception.EmailAlreadyExistException;
 import adaii.repository.UserRepository;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
 
 
     public AuthResponse register(RegisterRequest request){
@@ -68,5 +72,27 @@ public class AuthService {
 
 
 
+    public void logout(String authHeader) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        String token = authHeader.substring(7);
+
+        boolean alreadyBlacklisted =
+                blacklistedTokenRepository.existsByToken(token);
+
+        if (alreadyBlacklisted) {
+            return;
+        }
+
+        BlacklistedToken blacklistedToken = BlacklistedToken.builder()
+                .token(token)
+                .blacklistedAt(LocalDateTime.now())
+                .build();
+
+        blacklistedTokenRepository.save(blacklistedToken);
+    }
 
 }

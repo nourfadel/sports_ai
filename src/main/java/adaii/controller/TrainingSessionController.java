@@ -62,13 +62,12 @@ public class TrainingSessionController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody CreateTrainingSessionRequest request
     ) {
-        trainingSessionService.createSession(userDetails.getUserId(), request);
-
+        TrainingSessionResponse sessionResponse = trainingSessionService.createSession(userDetails.getUserId(), request);
         return ResponseEntity.ok(
                 ApiResponse.<TrainingSessionResponse>builder()
                         .status("SUCCESS")
                         .message("Session created successfully")
-                        .data(null)
+                        .data(sessionResponse)
                         .build()
         );
     }

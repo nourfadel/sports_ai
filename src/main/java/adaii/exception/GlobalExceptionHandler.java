@@ -110,6 +110,18 @@ public class GlobalExceptionHandler  {
         );
     }
 
+    @ExceptionHandler(PlayerProfileAlreadyExistException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePlayerProfileAlreadyExist(PlayerProfileAlreadyExistException profileAlreadyExistException){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ApiResponse.<Void>builder()
+                        .status("ERROR")
+                        .message(profileAlreadyExistException.getMessage())
+                        .data(null)
+                        .build()
+        );
+    }
+
+
 
     @ExceptionHandler(SensorDataNotFound.class)
     public ResponseEntity<ApiResponse<Void>> handleSensorDataNotFound(SensorDataNotFound sensorDataNotFound){
