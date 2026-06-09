@@ -1,6 +1,6 @@
 package adaii.service;
 
-import adaii.dto.*;
+import adaii.dto.request.ScoutProfileRequest;
 import adaii.dto.response.*;
 import adaii.entity.*;
 import adaii.exception.UserAlreadyExistsException;

@@ -1,9 +1,9 @@
 package adaii.service;
 
-import adaii.dto.HardwareSensorDataRequest;
-import adaii.dto.LiveSensorDataResponse;
-import adaii.dto.SensorDataResponse;
-import adaii.dto.SessionSummaryResponse;
+import adaii.dto.response.LiveSensorDataResponse;
+import adaii.dto.response.SensorDataResponse;
+import adaii.dto.response.SessionSummaryResponse;
+import adaii.dto.request.SensorDataRequest;
 import adaii.entity.DeviceAssignment;
 import adaii.entity.PlayerProfile;
 import adaii.entity.SensorData;
@@ -32,7 +32,7 @@ public class SensorDataService {
     private final DeviceAssignmentRepository deviceAssignmentRepository;
     private final AlertService alertService;
 
-    public void ingest(HardwareSensorDataRequest request){
+    public void ingest(SensorDataRequest request){
 
         DeviceAssignment assignment = deviceAssignmentRepository
                 .findByDeviceUuidAndActiveTrue(request.getDeviceUuid())
@@ -42,7 +42,7 @@ public class SensorDataService {
 
         TrainingSession session = trainingSessionRepository.findByPlayerProfileIdAndStatus(profile.getId(),
                         SessionStatus.ACTIVE
-                        )
+                )
                 .orElseThrow(() -> new InvalidSessionStateException("No active session found for this player"));
 
         SensorData sensorData = SensorData.builder()
@@ -200,7 +200,6 @@ public class SensorDataService {
                 .build();
     }
 }
-
 
 
 

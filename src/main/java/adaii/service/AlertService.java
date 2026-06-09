@@ -1,6 +1,6 @@
 package adaii.service;
 
-import adaii.dto.AlertResponse;
+import adaii.dto.response.AlertResponse;
 import adaii.entity.AlertNotification;
 import adaii.entity.PlayerProfile;
 import adaii.entity.SensorData;

@@ -1,9 +1,9 @@
 package adaii.controller;
 
-import adaii.dto.ApiResponse;
-import adaii.dto.LiveSensorDataResponse;
-import adaii.dto.SensorDataResponse;
-import adaii.dto.SessionSummaryResponse;
+import adaii.dto.response.ApiResponse;
+import adaii.dto.response.LiveSensorDataResponse;
+import adaii.dto.response.SensorDataResponse;
+import adaii.dto.response.SessionSummaryResponse;
 import adaii.service.SensorDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -1,9 +1,9 @@
 package adaii.controller;
 
 import adaii.config.CustomUserDetails;
-import adaii.dto.ApiResponse;
-import adaii.dto.CreateTrainingSessionRequest;
-import adaii.dto.TrainingSessionResponse;
+import adaii.dto.response.ApiResponse;
+import adaii.dto.request.CreateTrainingSessionRequest;
+import adaii.dto.response.TrainingSessionResponse;
 import adaii.service.TrainingSessionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

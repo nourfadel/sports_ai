@@ -1,9 +1,9 @@
 package adaii.controller;
 
 import adaii.config.CustomUserDetails;
-import adaii.dto.ApiResponse;
-import adaii.dto.ScoutProfileRequest;
-import adaii.dto.ScoutProfileResponse;
+import adaii.dto.response.ApiResponse;
+import adaii.dto.request.ScoutProfileRequest;
+import adaii.dto.response.ScoutProfileResponse;
 import adaii.dto.response.ScoutDashboardResponse;
 import adaii.dto.response.ScoutPlayerComparisonResponse;
 import adaii.dto.response.ScoutPlayerDetailsResponse;

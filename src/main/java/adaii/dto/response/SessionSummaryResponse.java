@@ -1,4 +1,4 @@
-package adaii.dto;
+package adaii.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

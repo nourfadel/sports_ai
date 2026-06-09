@@ -1,6 +1,8 @@
 package adaii.controller;
 
-import adaii.dto.*;
+import adaii.dto.request.*;
+import adaii.dto.response.ApiResponse;
+import adaii.dto.response.AuthResponse;
 import adaii.service.AuthService;
 import adaii.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;

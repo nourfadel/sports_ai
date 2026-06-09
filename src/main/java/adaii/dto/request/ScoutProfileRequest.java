@@ -1,4 +1,4 @@
-package adaii.dto;
+package adaii.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

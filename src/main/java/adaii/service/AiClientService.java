@@ -1,6 +1,6 @@
 package adaii.service;
 
-import adaii.dto.AiAnalysisRequest;
+import adaii.dto.request.AiAnalysisRequest;
 import adaii.dto.response.AiAnalysisResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

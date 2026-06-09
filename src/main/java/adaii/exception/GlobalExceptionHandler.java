@@ -5,8 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import adaii.dto.ApiResponse;
-import adaii.dto.ErrorResponse;
+import adaii.dto.response.ApiResponse;
+import adaii.dto.response.ErrorResponse;
 
 import java.util.HashMap;
 import java.util.Map;

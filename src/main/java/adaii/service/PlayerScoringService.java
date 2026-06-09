@@ -1,8 +1,8 @@
 package adaii.service;
 
 import adaii.dto.response.PlayerScoreResponse;
-import adaii.dto.SessionAnalysisResponse;
-import adaii.dto.SessionSummaryResponse;
+import adaii.dto.response.SessionAnalysisResponse;
+import adaii.dto.response.SessionSummaryResponse;
 import adaii.entity.PlayerProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

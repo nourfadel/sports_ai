@@ -1,13 +1,11 @@
 package adaii.service;
 
 import adaii.exception.PlayerProfileAlreadyExistException;
-import adaii.exception.PlayerProfileNotFoundException;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
-import adaii.dto.PlayerProfileRequest;
-import adaii.dto.PlayerProfileResponse;
-import adaii.dto.UpdatePlayerProfileRequest;
+import adaii.dto.request.PlayerProfileRequest;
+import adaii.dto.response.PlayerProfileResponse;
+import adaii.dto.request.UpdatePlayerProfileRequest;
 import adaii.entity.PlayerProfile;
 import adaii.entity.Team;
 import adaii.entity.User;

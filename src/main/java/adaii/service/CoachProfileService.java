@@ -1,6 +1,7 @@
 package adaii.service;
 
-import adaii.dto.*;
+import adaii.dto.request.CoachProfileRequest;
+import adaii.dto.response.*;
 import adaii.entity.*;
 import adaii.entity.enums.SessionStatus;
 import adaii.exception.SessionNotFoundException;
@@ -145,7 +146,7 @@ public class CoachProfileService {
     }
 
 
-    public LiveSensorDataResponse getSessionLiveData(Long coachId,Long sessionId){
+    public LiveSensorDataResponse getSessionLiveData(Long coachId, Long sessionId){
         getSessionIfBelongToCoachTeam(coachId,sessionId);
 
         return sensorDataService.getLiveData(sessionId);
@@ -175,7 +176,7 @@ public class CoachProfileService {
         return session;
     }
 
-    public List<SensorDataResponse> getSessionSensorData(Long coachId,Long sessionId){
+    public List<SensorDataResponse> getSessionSensorData(Long coachId, Long sessionId){
         getSessionIfBelongToCoachTeam(coachId,sessionId);
 
         List<SensorDataResponse> responses = sensorDataService.getSessionData(sessionId);
@@ -184,7 +185,7 @@ public class CoachProfileService {
     }
 
 
-    public List<AlertResponse> getSessionsAlerts(Long coachId,Long sessionId){
+    public List<AlertResponse> getSessionsAlerts(Long coachId, Long sessionId){
         getSessionIfBelongToCoachTeam(coachId,sessionId);
 
         return alertNotificationRepository.findBySessionIdOrderByCreatedAtDesc(sessionId)
@@ -206,7 +207,7 @@ public class CoachProfileService {
                 .build();
     }
 
-    public SessionAnalysisResponse getSessionAnalysis(Long coachId,Long sessionId){
+    public SessionAnalysisResponse getSessionAnalysis(Long coachId, Long sessionId){
         getSessionIfBelongToCoachTeam(coachId,sessionId);
 
         return sessionAnalysisService.getSessionAnalysis(sessionId);

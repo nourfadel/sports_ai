@@ -1,8 +1,5 @@
 package adaii.dto.response;
 
-import adaii.dto.LiveSensorDataResponse;
-import adaii.dto.SessionAnalysisResponse;
-import adaii.dto.TrainingSessionResponse;
 import lombok.Builder;
 import lombok.Data;
 

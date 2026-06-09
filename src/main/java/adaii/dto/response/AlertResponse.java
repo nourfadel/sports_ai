@@ -1,4 +1,4 @@
-package adaii.dto;
+package adaii.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;

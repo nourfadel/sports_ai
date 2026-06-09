@@ -1,7 +1,8 @@
 package adaii.controller;
 
 import adaii.config.CustomUserDetails;
-import adaii.dto.*;
+import adaii.dto.request.CoachProfileRequest;
+import adaii.dto.response.*;
 import adaii.service.CoachProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

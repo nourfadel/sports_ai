@@ -1,10 +1,10 @@
 package adaii.controller;
 
 import adaii.config.CustomUserDetails;
-import adaii.dto.ApiResponse;
-import adaii.dto.PlayerProfileRequest;
-import adaii.dto.PlayerProfileResponse;
-import adaii.dto.UpdatePlayerProfileRequest;
+import adaii.dto.response.ApiResponse;
+import adaii.dto.request.PlayerProfileRequest;
+import adaii.dto.response.PlayerProfileResponse;
+import adaii.dto.request.UpdatePlayerProfileRequest;
 import adaii.service.PlayerProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

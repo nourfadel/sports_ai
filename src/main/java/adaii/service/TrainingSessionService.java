@@ -1,10 +1,9 @@
 package adaii.service;
 
-import adaii.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import adaii.dto.CreateTrainingSessionRequest;
-import adaii.dto.TrainingSessionResponse;
+import adaii.dto.request.CreateTrainingSessionRequest;
+import adaii.dto.response.TrainingSessionResponse;
 import adaii.entity.PlayerProfile;
 import adaii.entity.TrainingSession;
 import adaii.entity.enums.SessionStatus;

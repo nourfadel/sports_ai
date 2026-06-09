@@ -1,12 +1,13 @@
-package adaii.dto;
+package adaii.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import adaii.entity.enums.Gender;
 import adaii.entity.enums.PlayerPosition;
 
 @Data
-public class UpdatePlayerProfileRequest {
+public class PlayerProfileRequest {
 
     @NotNull(message = "Age is required")
     private Integer age;
@@ -23,5 +24,7 @@ public class UpdatePlayerProfileRequest {
     @NotNull(message = "Primary position is required")
     private PlayerPosition primaryPosition;
 
-    private String profileImageUrl;
+    @NotBlank(message = "Team name is required")
+    private String teamName;
+
 }

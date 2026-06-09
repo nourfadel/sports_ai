@@ -1,7 +1,7 @@
 package adaii.controller;
 
-import adaii.dto.AlertResponse;
-import adaii.dto.ApiResponse;
+import adaii.dto.response.AlertResponse;
+import adaii.dto.response.ApiResponse;
 import adaii.service.AlertService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

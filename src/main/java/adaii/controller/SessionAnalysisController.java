@@ -1,7 +1,7 @@
 package adaii.controller;
 
-import adaii.dto.ApiResponse;
-import adaii.dto.SessionAnalysisResponse;
+import adaii.dto.response.ApiResponse;
+import adaii.dto.response.SessionAnalysisResponse;
 import adaii.service.SessionAnalysisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

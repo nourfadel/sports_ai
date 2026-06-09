@@ -1,4 +1,4 @@
-package adaii.dto;
+package adaii.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class HardwareSensorDataRequest {
+public class SensorDataRequest {
     private String deviceUuid;
 
     private Long sessionId;
