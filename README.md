@@ -1,325 +1,1340 @@
 # ADAII – AI-Powered Sports Monitoring, Performance Analysis & Scouting Platform
 
-> **Swagger API Documentation:** [http://adaii-app.servebeer.com/api/docs](http://adaii-app.servebeer.com/api/docs)
+> **ADAII** is an intelligent sports technology platform designed to monitor football players in real time, analyze their physical and performance data using Artificial Intelligence, detect potential injury and fatigue risks, and support coaches and scouts with data-driven decisions.
 
-**ADAII** is an intelligent sports technology platform designed to monitor football players in real time, analyze their physical and performance data using Artificial Intelligence, detect potential injury and fatigue risks, and support coaches and scouts with data-driven decisions.
+ADAII combines **wearable hardware, MQTT communication, Spring Boot, MySQL, FastAPI, Machine Learning, and a mobile application** into one integrated sports intelligence ecosystem.
 
-The platform combines **wearable hardware, MQTT communication, Spring Boot, MySQL, FastAPI, Machine Learning, and a mobile application** into one integrated sports intelligence ecosystem.
-
----
-
-## Table of Contents
-
-- [Project Overview](#project-overview)
-- [The Problem](#the-problem)
-- [The Solution](#the-solution)
-- [Project Objectives](#project-objectives)
-- [Main Features](#main-features)
-- [System Architecture](#system-architecture)
-- [Data Flow](#data-flow)
-- [AI & Machine Learning](#ai--machine-learning)
-- [Real-Time Hardware Integration](#real-time-hardware-integration)
-- [Backend Architecture](#backend-architecture)
-- [Database](#database)
-- [API Documentation](#api-documentation)
-- [Example End-to-End Flow](#example-end-to-end-flow)
-- [Hardware & Integration Challenges](#hardware--integration-challenges)
-- [Project Structure](#project-structure)
-- [Technology Stack](#technology-stack)
-- [Deployment & Running Locally](#deployment--running-locally)
-- [Testing](#testing)
-- [Future Improvements](#future-improvements)
-- [Research Gap](#research-gap)
-- [Project Team](#project-team)
+The platform is designed to move from traditional subjective player evaluation toward **continuous monitoring, real-time analytics, AI-assisted decision making, and intelligent scouting**.
 
 ---
 
-## Project Overview
+# Table of Contents
 
-Modern football is increasingly becoming a data-driven sport. Traditional player evaluation and monitoring often depend heavily on manual observation, subjective judgment, and delayed detection of physical problems.
+* [Project Overview](#project-overview)
+* [The Problem](#the-problem)
+* [The Solution](#the-solution)
+* [Main Features](#main-features)
+* [System Architecture](#system-architecture)
+* [Data Flow](#data-flow)
+* [User Roles](#user-roles)
+* [Player Features](#player-features)
+* [Coach Features](#coach-features)
+* [Scout Features](#scout-features)
+* [AI & Machine Learning](#ai--machine-learning)
+* [Real-Time Hardware Integration](#real-time-hardware-integration)
+* [MQTT Communication](#mqtt-communication)
+* [Backend Architecture](#backend-architecture)
+* [Authentication & Security](#authentication--security)
+* [Player Scoring](#player-scoring)
+* [Database](#database)
+* [API Documentation](#api-documentation)
+* [Example End-to-End Flow](#example-end-to-end-flow)
+* [Example MQTT Payload](#example-mqtt-payload)
+* [Example API Requests](#example-api-requests)
+* [Project Structure](#project-structure)
+* [Technology Stack](#technology-stack)
+* [Hardware & Integration Challenges](#hardware--integration-challenges)
+* [Deployment](#deployment)
+* [Running the Project Locally](#running-the-project-locally)
+* [Testing](#testing)
+* [Future Improvements](#future-improvements)
+* [Project Team](#project-team)
+
+---
+
+# Project Overview
+
+Modern football is increasingly becoming data-driven.
+
+Traditional player evaluation often depends heavily on:
+
+* Manual observation
+* Coach experience
+* Subjective judgment
+* Limited performance statistics
+* Delayed detection of physical problems
+* Time-consuming scouting processes
 
 ADAII was developed to address these limitations by creating an integrated platform capable of collecting player data continuously, processing it in real time, analyzing it using AI, and presenting meaningful insights to players, coaches, and scouts.
 
-```text
- Wearable Hardware
-        │
-        ▼
- ESP32 + Sensors
-        │
-        ▼
- MQTT / HiveMQ Cloud
-        │
-        ▼
- Spring Boot Backend
-        │
-        ├──────────────► MySQL Database
-        │
-        ▼
- FastAPI AI Service
-        │
-        ▼
- AI Analysis & Recommendations
-        │
-        ▼
- Mobile Application / Dashboards
-        │
-        ├── Player
-        ├── Coach
-        ├── Scout
-        └── Admin
-```
-
----
-
-## The Problem
-
-### 1. Injury Prevention
-Football players are exposed to injuries caused by excessive workload, accumulated fatigue, and inadequate recovery. Traditional systems fail to monitor physiological and movement indicators in real time. ADAII continuously collects data like heart rate, HRV, speed, and player load to identify abnormal patterns and potential risks.
-
-### 2. Player Performance Analysis
-Player evaluation is often subjective ("Player A looked better than Player B"). ADAII provides measurable indicators (speed, distance, sprint activity, consistency) to evaluate performance objectively.
-
-### 3. Player Selection
-Coaches need data to decide who starts the next match. ADAII provides performance analysis and scoring mechanisms to compare players using historical data and AI-generated insights.
-
-### 4. Scouting
-Traditional scouting requires heavy travel and manual observation. ADAII provides a digital scouting environment to search, compare, and analyze players based on real performance data, reducing manual effort.
-
----
-
-## The Solution
-
-ADAII provides an integrated ecosystem that connects hardware, backend services, databases, AI, and applications. 
-
-**Core Workflow:**
-Collect Data → Transmit Data in Real Time → Validate & Process Data → Store Data → Analyze Data Using AI → Generate Insights → Notify / Recommend → Support Decision Making
-
----
-
-## Project Objectives
-
-* Monitor football players in real time.
-* Collect physiological and movement data.
-* Analyze player performance, detect fatigue, and estimate injury risk.
-* Generate AI-based recommendations for coaches and scouts.
-* Connect physical hardware with cloud/backend services in a scalable architecture.
-
----
-
-## Main Features
-
-### Authentication & Security
-* JWT authentication with role-based authorization.
-* JWT blacklist/logout mechanism.
-* Supported Roles: **PLAYER, COACH, SCOUT, ADMIN**
-
-### Player Features
-* Manage profile and view personal information.
-* Start/end training sessions and receive real-time sensor data.
-* Analyze training sessions using AI and receive risk notifications.
-
-### Coach Features
-* Monitor active training sessions and view real-time player performance.
-* View historical sessions, sensor data, and AI analysis.
-* Monitor potential injury risks and compare players.
-
-### Scout Features
-* Browse, search, and filter players by position, team, or performance.
-* Sort by overall/potential score and compare players.
-* Add players to a watchlist and access scouting insights.
-
-### Admin Features
-* User, team, and device management.
-* Device assignment and platform configuration.
-
----
-
-## AI & Machine Learning
-
-The AI layer is critical to ADAII. The main backend uses **Java/Spring Boot**, while AI processing runs on **Python/FastAPI**. 
+The platform combines:
 
 ```text
-Spring Boot  ──(REST API)──►  FastAPI AI Service  ──►  Machine Learning Models
-```
-
-### AI Capabilities
-* **Injury Risk Prediction:** Analyzes data to generate risk assessments (e.g., `MEDIUM` risk with recommendations to reduce intensity).
-* **Fatigue Detection:** Uses HRV, player load, and sprint activity to estimate fatigue.
-* **Performance Analysis:** Generates insights on physical performance and consistency.
-
-**Example AI Output:**
-```json
-{
-  "performanceScore": 86,
-  "fatigueScore": 72,
-  "injuryRisk": 0.31,
-  "riskLevel": "MEDIUM",
-  "recommendation": "Reduce high-intensity workload and allow additional recovery."
-}
+Wearable Hardware
+        ↓
+     MQTT / HiveMQ
+        ↓
+Spring Boot Backend
+        ↓
+     MySQL
+        ↓
+   FastAPI / AI Layer
+        ↓
+Mobile Application
+        ↓
+Players / Coaches / Scouts
 ```
 
 ---
 
-## Real-Time Hardware Integration
+# The Problem
 
-ADAII uses an ESP32-based device to collect data from a GPS, Heart Rate Sensor, Motion Sensors, and Temperature Sensor. The ESP32 packages readings into JSON and publishes them to an MQTT broker (HiveMQ Cloud).
+ADAII was designed around three major problems in football.
 
-### MQTT Topic Structure
-The project uses topics like `devices/{deviceUuid}/data`. 
+## 1. Injury Prevention
 
-**Example Payload (`devices/ESP32-001/data`):**
+Many physical problems do not appear suddenly. They can be preceded by changes in physiological and movement indicators such as:
+
+* Heart rate
+* Body temperature
+* Player load
+* Acceleration
+* Speed
+* Fatigue indicators
+
+Without continuous monitoring, identifying these warning signs early can be difficult.
+
+ADAII continuously collects player data and generates alerts when abnormal or dangerous conditions are detected.
+
+---
+
+## 2. Objective Performance Evaluation
+
+Player performance is often evaluated using human observation and traditional statistics.
+
+ADAII introduces data-driven performance analysis using measurements such as:
+
+* Speed
+* Distance
+* Sprint count
+* Heart rate
+* Acceleration
+* Player load
+* Session statistics
+
+This enables objective performance tracking across training sessions.
+
+---
+
+## 3. Intelligent Scouting
+
+Scouts often need to manually observe many players before deciding which players are suitable for a team.
+
+ADAII helps scouts by providing:
+
+* Player search
+* Filtering
+* Sorting
+* Player profiles
+* Player comparison
+* Watchlists
+* Performance scores
+* Potential scores
+* AI-generated insights
+
+This reduces the time required to identify suitable players.
+
+---
+
+# The Solution
+
+ADAII provides a unified platform where:
+
+1. Wearable devices collect player data.
+2. MQTT transfers the data in real time.
+3. Spring Boot receives and processes the data.
+4. MySQL stores historical information.
+5. FastAPI provides AI-based analysis.
+6. The backend calculates performance and potential scores.
+7. Alerts are generated when abnormal conditions are detected.
+8. Mobile dashboards present the results to the appropriate users.
+
+---
+
+# Main Features
+
+## Authentication & Security
+
+* JWT authentication
+* Role-based authorization
+* Spring Security
+* BCrypt password hashing
+* Protected REST APIs
+* JWT blacklist-based logout
+* Global validation and exception handling
+* Swagger/OpenAPI security integration
+
+### Supported Roles
+
+* `PLAYER`
+* `COACH`
+* `SCOUT`
+* `ADMIN`
+
+---
+
+# Player Features
+
+Players can:
+
+* Register and authenticate
+* Create their player profile
+* Update their profile
+* Create training sessions
+* Start training sessions
+* End training sessions
+* Receive live sensor data
+* View session history
+* View session summaries
+* Receive alerts
+* Request AI analysis
+* View AI-generated session results
+* Monitor performance over time
+
+---
+
+# Coach Features
+
+Coaches can:
+
+* Create and manage coach profiles
+* View team players
+* Monitor player sessions
+* Access player session history
+* View live session data
+* View session sensor history
+* View alerts
+* View AI analysis
+* Access coach dashboards
+* Monitor player performance and risk indicators
+
+---
+
+# Scout Features
+
+Scouts can:
+
+* Create scout profiles
+* Browse players
+* Search players
+* Filter players
+* Sort players
+* View detailed player profiles
+* Compare players
+* Add players to watchlists
+* Remove players from watchlists
+* View overall scores
+* View potential scores
+* Access scout dashboards
+
+---
+
+# AI & Machine Learning
+
+ADAII uses a separate **FastAPI-based AI service** rather than placing the machine learning logic directly inside the Java backend.
+
+This separation provides a clean architecture where:
+
+```text
+Spring Boot
+   ↓
+AI Request
+   ↓
+FastAPI
+   ↓
+Machine Learning Model
+   ↓
+Analysis Result
+   ↓
+Spring Boot
+```
+
+## AI Responsibilities
+
+The AI layer is designed to support:
+
+* Performance analysis
+* Fatigue analysis
+* Injury risk prediction
+* Risk classification
+* Player recommendations
+* Performance insights
+
+The separation between backend and AI service also makes it easier to replace or improve the machine learning model without rewriting the main Java backend.
+
+---
+
+# Real-Time Hardware Integration
+
+One of the main components of ADAII is the wearable sports device.
+
+The hardware is responsible for collecting real-time player data such as:
+
+* Heart rate
+* Body temperature
+* GPS latitude
+* GPS longitude
+* Speed
+* Distance
+* Acceleration on X/Y/Z axes
+* Sprint count
+* Player load
+* HRV
+* Respiratory rate
+* Satellite information
+
+The device sends the collected measurements as structured JSON messages.
+
+---
+
+# MQTT Communication
+
+ADAII uses **MQTT** as the communication protocol between wearable devices and the backend.
+
+The MQTT broker is hosted using **HiveMQ Cloud**.
+
+### Why MQTT?
+
+MQTT is suitable for the project because it is:
+
+* Lightweight
+* Efficient for IoT devices
+* Designed for low-bandwidth communication
+* Suitable for continuous sensor streams
+* Event-driven
+* Well suited for real-time device communication
+
+### Topic Pattern
+
+The backend subscribes using a wildcard topic:
+
+```text
+devices/+/data
+```
+
+A device can publish to:
+
+```text
+devices/ESP32-001/data
+```
+
+This allows the backend to dynamically receive data from multiple devices.
+
+---
+
+# Example MQTT Message
+
 ```json
 {
   "sessionId": 27,
-  "timestamp": "2026-06-09T03:45:10",
-  "lat": 31.0409,
-  "lng": 31.3785,
-  "speed_mps": 6.8,
-  "distance_m": 1240.5,
-  "satellites": 10,
-  "accel_x": 1.25,
-  "accel_y": 0.42,
-  "accel_z": 9.81,
-  "sprints": 4,
-  "player_load": 72.5,
-  "body_temp": 37.2,
-  "heart_rate": 151,
-  "hrv": 48.2,
-  "respiratory_rate": 22
+  "playerProfileId": 7,
+  "timestamp": "2026-06-09T04:30:00",
+  "lat": 30.0444,
+  "lng": 31.2357,
+  "speed_mps": 5.4,
+  "distance_m": 120.5,
+  "satellites": 8,
+  "accel_x": 0.22,
+  "accel_y": 0.33,
+  "accel_z": 0.11,
+  "sprints": 2,
+  "player_load": 14.6,
+  "body_temp": 36.7,
+  "heart_rate": 92,
+  "hrv": 48,
+  "respiratory_rate": 17
 }
 ```
 
----
-
-## Backend Architecture
-
-A layered Spring Boot architecture separates concerns:
-**Controller Layer → Service Layer → Repository Layer → Database**
-
-### Sensor Data Processing Flow
-1. Receive MQTT message via Spring Integration.
-2. Extract device UUID from the topic.
-3. Deserialize JSON to `SensorDataRequest`.
-4. Resolve player/device relationship and active session.
-5. Create `SensorData` entity and store in MySQL.
-6. Run alert checks and make data available for analysis.
-
----
-
-## Database
-
-ADAII uses **MySQL** to manage structured relationships between Users, Players, Teams, Sessions, Devices, and Sensor Data. 
-
-Continuous monitoring generates massive amounts of data. Readings are associated hierarchically: 
-`Device → Player → Training Session → Sensor Data`
-
-**Example Session Summary:**
-```json
-{
-  "sessionId": 27,
-  "avgHeartRate": 148.4,
-  "maxHeartRate": 181.0,
-  "avgSpeed": 5.72,
-  "maxSpeed": 8.91,
-  "totalDistance": 6420.5,
-  "totalSprints": 17,
-  "avgPlayerLoad": 71.4
-}
-```
-
----
-
-## Hardware & Integration Challenges
-
-1. **Real-Time Data Streams:** Standard HTTP REST is insufficient for continuous streams. **MQTT** (Publish/Subscribe) is used for lightweight, high-frequency IoT communication.
-2. **Device Identification:** Dynamic routing uses the `{deviceUuid}` embedded directly in the MQTT topic string.
-3. **Connectivity Issues:** Handled via MQTT QoS, Last Will and Testament (LWT), and auto-reconnects.
-4. **Data Volume:** Handled via efficient MySQL indexing and structured data layers.
-5. **Timestamp Handling:** Required implementing Jackson JSR-310 datatype support to properly deserialize JSON timestamps into Java `LocalDateTime`.
-
----
-
-## Project Structure
+The device UUID is also extracted from the MQTT topic:
 
 ```text
-src/main/java/adaii
-│
-├── config           # Security, MQTT, and App configs
-├── controller       # REST API endpoints
-├── dto              # Request/Response objects
-├── entity           # JPA Entities
-├── repository       # Database interfaces
-├── service          # Business logic, MQTT subscriber, Alerts
-├── exception        # Global error handling
-├── mapper           # Object mapping
-└── util             # Helpers and constants
+devices/{deviceUuid}/data
+```
+
+For example:
+
+```text
+devices/ESP32-001/data
 ```
 
 ---
 
-## Technology Stack
+# Backend Architecture
 
-* **Backend:** Java 21, Spring Boot, Spring Security, Spring Data JPA, Hibernate, Maven
-* **AI Engine:** Python, FastAPI, Machine Learning Models
-* **Database:** MySQL
-* **IoT / Communication:** ESP32, MQTT, HiveMQ Cloud, Eclipse Paho, Spring Integration
-* **Security:** JWT, Role-Based Access Control, Password Encryption
-* **Deployment:** Linux/Ubuntu, Amazon EC2
+The backend follows a layered architecture:
+
+```text
+Controller Layer
+       ↓
+Service Layer
+       ↓
+Repository Layer
+       ↓
+MySQL Database
+```
+
+External integrations are separated into dedicated components:
+
+```text
+Spring Boot Backend
+ ├── REST APIs
+ ├── Spring Security / JWT
+ ├── MQTT Integration
+ ├── Business Services
+ ├── JPA / Hibernate
+ ├── MySQL
+ └── FastAPI AI Integration
+```
+
+This separation improves:
+
+* Maintainability
+* Scalability
+* Testability
+* Code organization
+* Separation of concerns
 
 ---
 
-## Deployment & Running Locally
+# Real-Time Sensor Processing Flow
 
-### Prerequisites
-* Java 21, Maven, MySQL 8+, Python 3.10+, Git
-* MQTT broker or HiveMQ Cloud account
+When a sensor message arrives:
 
-### 1. Configure MySQL
+```text
+1. Wearable Device
+        ↓
+2. HiveMQ Cloud
+        ↓
+3. MQTT Subscriber
+        ↓
+4. JSON Deserialization
+        ↓
+5. SensorDataRequest
+        ↓
+6. Session & Player Validation
+        ↓
+7. SensorData Entity
+        ↓
+8. MySQL
+        ↓
+9. Alert Analysis
+```
+
+The system stores the reading and then checks whether the values require an alert.
+
+---
+
+# Authentication & Security
+
+ADAII uses **Spring Security + JWT**.
+
+Authentication flow:
+
+```text
+User Login
+    ↓
+Spring Security Authentication
+    ↓
+JWT Generation
+    ↓
+Client Stores Token
+    ↓
+Authorization Header
+    ↓
+JWT Filter
+    ↓
+Role Validation
+    ↓
+Protected Endpoint
+```
+
+Example:
+
+```http
+Authorization: Bearer <JWT_TOKEN>
+```
+
+JWT is used to protect APIs and ensure that each role can only access the resources allowed for it.
+
+---
+
+# Player Scoring
+
+ADAII provides two important player metrics:
+
+## Overall Score
+
+The `overallScore` represents the player's current performance level based on available performance and session data.
+
+It can consider indicators such as:
+
+* Speed
+* Distance
+* Sprint activity
+* Player load
+* Heart rate
+* Session analysis
+
+---
+
+## Potential Score
+
+The `potentialScore` represents the player's estimated future potential based on the current performance profile and additional player characteristics.
+
+These scores are particularly useful for the scouting module.
+
+They allow scouts to sort and compare players based on measurable performance indicators instead of relying only on subjective observation.
+
+---
+
+# Database
+
+ADAII uses **MySQL** as the primary relational database.
+
+The database stores information related to:
+
+* Users
+* Player profiles
+* Coach profiles
+* Scout profiles
+* Teams
+* Training sessions
+* Sensor data
+* Alerts
+* AI analysis
+* Watchlists
+* Blacklisted JWT tokens
+
+### Why MySQL?
+
+MySQL was selected because the project contains strongly related entities and requires:
+
+* Relational data modeling
+* Foreign-key relationships
+* Reliable transactions
+* Efficient CRUD operations
+* Indexing
+* Structured historical data storage
+* Easy integration with Spring Data JPA and Hibernate
+
+For example:
+
+```text
+User
+  ↓
+PlayerProfile
+  ↓
+TrainingSession
+  ↓
+SensorData
+  ↓
+Alerts / AI Analysis
+```
+
+---
+
+# API Documentation
+
+ADAII provides interactive API documentation using **Swagger / OpenAPI**.
+
+### Swagger UI
+
+```text
+http://adaii-app.servebeer.com/api/docs
+```
+
+The documentation includes:
+
+* API endpoints
+* Request bodies
+* Response models
+* Parameters
+* HTTP response codes
+* Authentication requirements
+* Role-based protected endpoints
+
+---
+
+# Example End-to-End Flow
+
+## Player Workflow
+
+```text
+1. Register
+        ↓
+2. Login
+        ↓
+3. Create Player Profile
+        ↓
+4. Create Training Session
+        ↓
+5. Start Session
+        ↓
+6. Wearable Device Sends MQTT Data
+        ↓
+7. Backend Receives Sensor Data
+        ↓
+8. Data Stored in MySQL
+        ↓
+9. Alerts Generated if Needed
+        ↓
+10. View Live Data
+        ↓
+11. End Session
+        ↓
+12. Generate AI Analysis
+        ↓
+13. View Session Summary & AI Results
+```
+
+---
+
+# Example API Requests
+
+## Register
+
+```http
+POST /api/sports/auth/register
+```
+
+Example:
+
+```json
+{
+  "firstName": "Nour",
+  "lastName": "Fadel",
+  "email": "player@example.com",
+  "password": "StrongPassword123",
+  "role": "PLAYER"
+}
+```
+
+---
+
+## Login
+
+```http
+POST /api/sports/auth/login
+```
+
+```json
+{
+  "email": "player@example.com",
+  "password": "StrongPassword123"
+}
+```
+
+Use the returned token in Swagger's **Authorize** button.
+
+---
+
+## Create Session
+
+```http
+POST /api/sessions/create-session
+```
+
+The authenticated player creates a new training session.
+
+---
+
+## Start Session
+
+```http
+PUT /api/sessions/{sessionId}/start
+```
+
+Example:
+
+```text
+PUT /api/sessions/27/start
+```
+
+---
+
+## Get Live Data
+
+```http
+GET /api/sessions/{sessionId}/live
+```
+
+Example:
+
+```text
+GET /api/sessions/27/live
+```
+
+Possible response:
+
+```json
+{
+  "status": "SUCCESS",
+  "message": "Live sensor data fetched successfully",
+  "data": {
+    "sessionId": 27,
+    "deviceUuid": "ESP32-001",
+    "heartRate": 92,
+    "speed": 5.4,
+    "distance": 120.5,
+    "playerLoad": 14.6,
+    "bodyTemperature": 36.7
+  }
+}
+```
+
+---
+
+## Get Session Sensor Data
+
+```http
+GET /api/sessions/{sessionId}/sensor-data
+```
+
+---
+
+## Get Session Summary
+
+```http
+GET /api/sessions/{sessionId}/summary
+```
+
+The summary can provide values such as:
+
+* Average heart rate
+* Maximum heart rate
+* Average speed
+* Maximum speed
+* Total distance
+* Total sprints
+* Average player load
+* Maximum impact force
+* Average body temperature
+* Number of sensor readings
+
+---
+
+## Analyze Session
+
+```http
+POST /api/sessions/{sessionId}/analyze
+```
+
+The backend sends session data to the FastAPI AI service and stores the returned analysis.
+
+---
+
+## Get AI Analysis
+
+```http
+GET /api/sessions/{sessionId}/analysis
+```
+
+---
+
+# Scout API Examples
+
+## Browse Players
+
+```http
+GET /api/scouts/players
+```
+
+---
+
+## Search Players
+
+```http
+GET /api/scouts/players?search=nour
+```
+
+---
+
+## Filter Players
+
+```http
+GET /api/scouts/players?position=FORWARD
+```
+
+---
+
+## Sort by Overall Score
+
+```http
+GET /api/scouts/players?sortBy=overallScore&direction=desc
+```
+
+---
+
+## Compare Players
+
+```http
+GET /api/scouts/compare?player1Id=1&player2Id=2
+```
+
+---
+
+## Add Player to Watchlist
+
+```http
+POST /api/scouts/watchlist/{playerProfileId}
+```
+
+---
+
+## Get Watchlist
+
+```http
+GET /api/scouts/watchlist
+```
+
+---
+
+# Alert System
+
+ADAII monitors incoming sensor measurements and can generate alerts for abnormal conditions.
+
+Examples of monitored indicators include:
+
+* High heart rate
+* High body temperature
+* High physical load
+* Fatigue-related indicators
+* Other risk conditions generated by the analysis layer
+
+Alerts can then be accessed by authorized users such as players and coaches.
+
+---
+
+# Hardware & Integration Challenges
+
+Integrating wearable hardware with a cloud-based backend introduced several practical challenges.
+
+## 1. Real-Time Communication
+
+Sensor data must be continuously transmitted without depending on traditional request/response communication.
+
+**Solution:** MQTT was used as a lightweight publish/subscribe communication protocol.
+
+---
+
+## 2. Secure MQTT Communication
+
+The system communicates with HiveMQ Cloud using TLS-secured MQTT communication.
+
+The backend uses the secure MQTT connection on port:
+
+```text
+8883
+```
+
+The browser-based MQTT WebSocket client uses the WebSocket endpoint instead.
+
+---
+
+## 3. Dynamic Device Topics
+
+Multiple devices need to publish data without requiring a separate subscription for each device.
+
+**Solution:**
+
+```text
+devices/+/data
+```
+
+The `+` wildcard allows the backend to receive data from multiple devices dynamically.
+
+---
+
+## 4. Sensor Data Format
+
+Hardware data must be converted into a format that can be understood reliably by the backend.
+
+ADAII uses structured JSON messages with clearly defined fields.
+
+---
+
+## 5. Timestamp Serialization
+
+Sensor data contains timestamps that must be converted correctly between JSON and Java `LocalDateTime`.
+
+This required correct Jackson Java Time support using:
+
+```text
+jackson-datatype-jsr310
+```
+
+---
+
+## 6. Internet Connectivity
+
+Wearable devices depend on wireless connectivity to communicate with the MQTT broker.
+
+Real-world hardware environments can introduce:
+
+* Connection interruptions
+* Network instability
+* Delayed packets
+* Device reconnection requirements
+
+The MQTT client therefore supports automatic reconnect behavior.
+
+---
+
+## 7. High-Frequency Sensor Data
+
+Wearable devices can continuously generate readings.
+
+The backend must process and store these readings efficiently while still providing real-time access to the latest values.
+
+---
+
+# Deployment
+
+The backend is deployed on **Amazon EC2**.
+
+High-level deployment architecture:
+
+```text
+Internet
+   ↓
+Nginx
+   ↓
+Amazon EC2
+   ↓
+Spring Boot Application
+   ↓
+MySQL
+   ↓
+HiveMQ Cloud
+   ↓
+FastAPI AI Service
+```
+
+The application is packaged as a Spring Boot executable JAR.
+
+Example:
+
+```bash
+java -jar sports-ai-system-0.0.1-SNAPSHOT.jar
+```
+
+The deployed backend is accessible through:
+
+```text
+http://adaii-app.servebeer.com
+```
+
+Swagger:
+
+```text
+http://adaii-app.servebeer.com/api/docs
+```
+
+---
+
+# Running the Project Locally
+
+## Requirements
+
+Install:
+
+* Java 21
+* Maven
+* MySQL 8+
+* Python 3+
+* FastAPI
+* MQTT broker access
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone <YOUR_GITHUB_REPOSITORY>
+cd sports-ai-system
+```
+
+---
+
+## 2. Configure MySQL
+
+Create a database:
+
 ```sql
 CREATE DATABASE adaii;
 ```
-Update `application.properties`:
+
+Configure:
+
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/adaii
 spring.datasource.username=root
 spring.datasource.password=YOUR_PASSWORD
 ```
 
-### 2. Configure MQTT
-Update `application.properties`:
+---
+
+## 3. Configure JWT
+
+Example:
+
+```properties
+jwt.secret=YOUR_SECRET
+jwt.expiration=3600000
+```
+
+Do not commit real production secrets to GitHub.
+
+---
+
+## 4. Configure MQTT
+
+Example:
+
 ```properties
 mqtt.broker-url=ssl://YOUR_HIVEMQ_HOST:8883
-mqtt.client-id=Python_Backend_Server
+mqtt.client-id=sports-ai-backend
 mqtt.username=YOUR_USERNAME
 mqtt.password=YOUR_PASSWORD
 mqtt.topic=devices/+/data
 ```
 
-### 3. Build & Run Spring Boot
+---
+
+## 5. Run the Spring Boot Backend
+
 ```bash
-mvn clean package
+mvn spring-boot:run
+```
+
+or:
+
+```bash
+mvn clean package -DskipTests
 java -jar target/sports-ai-system-0.0.1-SNAPSHOT.jar
 ```
 
-### 4. Run FastAPI AI Service
+---
+
+## 6. Run the FastAPI AI Service
+
+Example:
+
 ```bash
-pip install -r requirements.txt
-uvicorn main:app --host 0.0.0.0 --port 8000
+uvicorn main:app --reload
+```
+
+The exact command depends on the AI service entry point.
+
+---
+
+# Environment Variables & Security
+
+Sensitive configuration should not be stored directly in the Git repository.
+
+Recommended production configuration includes:
+
+```text
+DATABASE_USERNAME
+DATABASE_PASSWORD
+JWT_SECRET
+MQTT_USERNAME
+MQTT_PASSWORD
+MAIL_USERNAME
+MAIL_PASSWORD
+AI_SERVICE_URL
+```
+
+For production deployments, use environment variables or a secret-management solution.
+
+---
+
+# Testing Strategy
+
+ADAII can be tested through:
+
+## Swagger
+
+Use:
+
+```text
+http://adaii-app.servebeer.com/api/docs
+```
+
+Swagger can be used to test:
+
+* Authentication
+* Player APIs
+* Coach APIs
+* Scout APIs
+* Session APIs
+* Sensor APIs
+* Alert APIs
+* AI analysis APIs
+
+---
+
+## MQTT Testing
+
+HiveMQ's WebSocket Client or a real wearable device can be used to publish sensor data.
+
+Example:
+
+```text
+Topic:
+devices/test-device/data
+```
+
+Then verify the complete pipeline:
+
+```text
+MQTT Publish
+   ↓
+Spring Boot Subscriber
+   ↓
+SensorData Processing
+   ↓
+MySQL
+   ↓
+GET /api/sessions/{id}/live
 ```
 
 ---
 
-## Future Improvements
+# Project Structure
 
-* **Real-Time WebSocket Dashboard:** Transition from API polling to WebSockets for smoother real-time UI updates.
-* **Docker & Kubernetes:** Containerize the full stack for easier deployment and scaling.
-* **CI/CD Pipelines:** Automate testing and deployment via GitHub Actions.
-* **Advanced AI:** Implement Deep Learning, Time-series models, and advanced tactical mapping.
-* **Mobile App Expansion:** Add heatmaps, player similarity charts, and tactical analysis features.
+```text
+sports-ai-system/
+│
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── adaii/
+│       │       ├── config/
+│       │       ├── controller/
+│       │       ├── dto/
+│       │       ├── entity/
+│       │       ├── exception/
+│       │       ├── mapper/
+│       │       ├── repository/
+│       │       ├── service/
+│       │       └── util/
+│       │
+│       └── resources/
+│           └── application.properties
+│
+├── pom.xml
+└── README.md
+```
 
 ---
 
+# Technology Stack
+
+## Backend
+
+* Java 21
+* Spring Boot
+* Spring MVC
+* Spring Security
+* JWT
+* Spring Data JPA
+* Hibernate
+* Maven
+
+## AI
+
+* Python
+* FastAPI
+* Machine Learning
+
+## Database
+
+* MySQL
+
+## IoT / Communication
+
+* ESP32 / Wearable Sensors
+* MQTT
+* HiveMQ Cloud
+
+## API Documentation
+
+* Swagger
+* OpenAPI
+
+## Deployment
+
+* Amazon EC2
+* Nginx
+
 ---
 
-> **ADAII** - Transforming raw athlete data into intelligent sports decisions.
-> Monitor → Analyze → Predict → Recommend → Improve
+# Why These Technologies?
+
+## Why Spring Boot?
+
+Spring Boot was selected because ADAII requires a scalable backend capable of handling:
+
+* REST APIs
+* Real-time data processing
+* Security
+* Database integration
+* MQTT communication
+* AI service integration
+
+It also provides a clean enterprise architecture through dependency injection, layered services, Spring Security, and Spring Data JPA.
+
+---
+
+## Why MySQL?
+
+MySQL is suitable because ADAII contains strongly related entities such as:
+
+```text
+Users
+Players
+Teams
+Sessions
+Sensor Data
+Alerts
+AI Analysis
+```
+
+A relational database provides:
+
+* Structured relationships
+* Referential integrity
+* Reliable transactions
+* Efficient querying
+* Indexing
+* Easy integration with Hibernate/JPA
+
+---
+
+## Why MQTT?
+
+MQTT was selected because wearable devices continuously send small sensor messages.
+
+MQTT provides:
+
+* Low overhead
+* Publish/subscribe communication
+* Real-time delivery
+* Lightweight device communication
+* Efficient communication for IoT systems
+
+---
+
+## Why FastAPI?
+
+The AI system is implemented as a separate FastAPI service because machine learning workloads are easier to develop and maintain in Python.
+
+This architecture allows:
+
+* Python-based ML libraries
+* Independent AI model development
+* Easy model replacement
+* Independent deployment
+* Clear separation between business logic and AI processing
+
+---
+
+# Example Architecture
+
+```text
+                ┌─────────────────────┐
+                │   Wearable / ESP32  │
+                │ Sensors + GPS       │
+                └──────────┬──────────┘
+                           │
+                           │ MQTT
+                           ▼
+                ┌─────────────────────┐
+                │    HiveMQ Cloud      │
+                │     MQTT Broker      │
+                └──────────┬──────────┘
+                           │
+                           ▼
+        ┌──────────────────────────────────┐
+        │      Spring Boot Backend          │
+        │                                  │
+        │  Security / REST APIs            │
+        │  Session Management              │
+        │  Sensor Processing               │
+        │  Alerts                          │
+        │  Scouting                        │
+        └─────────────┬───────────┬────────┘
+                      │           │
+                      │           │
+                      ▼           ▼
+             ┌────────────┐   ┌──────────────┐
+             │   MySQL    │   │   FastAPI    │
+             │  Database  │   │  AI Service  │
+             └────────────┘   └──────────────┘
+                      │           │
+                      └─────┬─────┘
+                            ▼
+                     Mobile Application
+                            │
+                ┌───────────┼───────────┐
+                ▼           ▼           ▼
+             Player      Coach       Scout
+```
+
+---
+
+# Future Improvements
+
+Possible future enhancements include:
+
+* WebSocket-based live dashboards
+* Advanced real-time visualization
+* Docker containerization
+* CI/CD pipelines
+* Kubernetes deployment
+* More advanced machine learning models
+* Improved model personalization
+* Automated model retraining
+* Advanced analytics and reporting
+* Expanded hardware support
+* Offline device buffering and synchronization
+
+---
+
+# Project Team
+
+## ADAII Team
+
+* **Nour El-Din Fadel Ibrahim El-Metwally**
+* **Mazen El-Sayed Shabara**
+* **Mostafa Rizk Labib Ghazy**
+* **Ahmed Sabry Hegazy**
+* **Mohamed Sameh El-Sayed**
+* **Soha Kassab Abdel-Ghany**
+* **Ahmed Ateya Elagharably**
+
+### Supervisors
+
+* **Dr. Nesma Ibrahim Hassanein**
+* **Dr. Wael Awad**
+
+---
+
+# Developed With
+
+```text
+Java • Spring Boot • Spring Security • MySQL
+FastAPI • Python • MQTT • HiveMQ
+ESP32 • REST APIs • JWT • AI/ML
+Amazon EC2 • Nginx • Swagger/OpenAPI
+```
+
+---
+
+# Project Goal
+
+ADAII aims to transform sports data into actionable intelligence by connecting **wearable devices, real-time communication, backend processing, artificial intelligence, and intelligent scouting** within one unified platform.
+
+> **Monitor smarter. Analyze deeper. Prevent risks. Discover talent.**
